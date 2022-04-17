@@ -13,7 +13,7 @@ master = Tk()
 canv = Canvas(master, height=WIN_HEIGHT, width=WIN_WITDH)
 
 GRID_WIDTH = 70
-GRID_HEIGHT =70
+GRID_HEIGHT = 70
 
 img = PhotoImage(width=WIN_WITDH, height=WIN_HEIGHT)
 canv.create_image( 0, 0, image=img, anchor=NW )
@@ -34,9 +34,14 @@ canv.create_image( 0, 0, image=img, anchor=NW )
 
 #WIN_WITDH / GRID_WIDTH * i, WIN_HEIGHT / GRID_HEIGHT * j , WIN_WITDH / GRID_WIDTH * i + WIN_WITDH / GRID_WIDTH, WIN_HEIGHT / GRID_HEIGHT * j + WIN_HEIGHT / GRID_HEIGHT
 
+#lambda color, column=i, row=j : img.put(color, (WIN_WITDH / GRID_WIDTH * i, WIN_HEIGHT / GRID_HEIGHT * j , WIN_WITDH / GRID_WIDTH * i + WIN_WITDH / GRID_WIDTH, WIN_HEIGHT / GRID_HEIGHT * j + WIN_HEIGHT / GRID_HEIGHT))
+
 class Grid1:
     def __init__(self, width, height):
-        self.grid = [[[0, canv.create_rectangle(WIN_WITDH / GRID_WIDTH * i, WIN_HEIGHT / GRID_HEIGHT * j , WIN_WITDH / GRID_WIDTH * i + WIN_WITDH / GRID_WIDTH, WIN_HEIGHT / GRID_HEIGHT * j + WIN_HEIGHT / GRID_HEIGHT)] for j in range(width)] for i in range(height)]
+        #self.grid = [[[0, canv.create_rectangle(WIN_WITDH / GRID_WIDTH * i, WIN_HEIGHT / GRID_HEIGHT * j , WIN_WITDH / GRID_WIDTH * i + WIN_WITDH / GRID_WIDTH, WIN_HEIGHT / GRID_HEIGHT * j + WIN_HEIGHT / GRID_HEIGHT)] for j in range(width)] for i in range(height)]
+        self.grid = [[[0, lambda color, column=i, row=j : img.put(color, (int(WIN_WITDH / GRID_WIDTH * column), int(WIN_HEIGHT / GRID_HEIGHT * row), int(WIN_WITDH / GRID_WIDTH * column + WIN_WITDH / GRID_WIDTH), int(WIN_HEIGHT / GRID_HEIGHT * row + WIN_HEIGHT / GRID_HEIGHT)))] for j in range(width)] for i in range(height)]
+
+        
         self.height = height
         self.width = width
 
@@ -45,7 +50,7 @@ class Grid1:
             for j in range(len(self.grid[0])):
                 if (i == 0 or j == 0 or i == width - 1 or j == height - 1 or (random.randint(1, 75) == 15)):
                     self.grid[i][j][0] = 1
-                    canv.itemconfig(self.grid[i][j][1], fill="black")
+                    self.grid[i][j][1]("black")
 
         self.player = ()
 
@@ -85,7 +90,6 @@ class Grid1:
         return x, y
 
 
-    def setColor(self, x, y, n):
 
 
 
