@@ -8,7 +8,7 @@ from turtle import update
 WIN_HEIGHT = 1000
 WIN_WITDH = 1000
 
-
+running = True
 
 master = Tk()
 canv = Canvas(master, height=WIN_HEIGHT, width=WIN_WITDH)
@@ -159,7 +159,7 @@ class Runner:
         
 
     def move(self):
-
+        global running
         bef = [self.dx, self.dy]
         if (grid.get_cube(self.x + 1, self.y) == 1):
             self.dx = -1
@@ -185,7 +185,9 @@ class Runner:
         self.x += self.dx
         self.y += self.dy
         #grid.grid[self.x][self.y][0] = 2
-
+        if (grid.grid[self.x][self.y][0] == 2):
+            canv.create_text(WIN_HEIGHT / 2, WIN_WITDH / 2, text="Game over", font=("Arial", 50))
+            running = False
         
         grid.move_runner(self.rect, self.x, self.y)
         canv.pack()
@@ -233,7 +235,7 @@ grid = Grid1(GRID_WIDTH, GRID_HEIGHT)
 Runner.set_grid(grid)
 
 runners = []
-for i in range(3):
+for i in range(1):
     runners.append(Runner())
 
 
@@ -244,7 +246,8 @@ def update():
     for i in range(len(runners)):
         runners[i].move()
     player.move()
-    master.after(200, update)
+    if (running):
+        master.after(200, update)
     
 
 
