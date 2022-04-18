@@ -104,7 +104,7 @@ class Grid1:
             return 
         
         self.grid[x][y][0] = 3
-        # self.grid[x][y][1]("yellow")
+        #   self.grid[x][y][1]("yellow")
         
         self.fill_dfs(x + 1, y)
         self.fill_dfs(x - 1, y)
@@ -206,6 +206,9 @@ class Player:
         self.rect = canv.create_rectangle(WIN_WITDH / GRID_WIDTH * self.x, WIN_HEIGHT / GRID_HEIGHT * self.y , WIN_WITDH / GRID_WIDTH * self.x + WIN_WITDH / GRID_WIDTH, WIN_HEIGHT / GRID_HEIGHT * self.y + WIN_HEIGHT / GRID_HEIGHT, fill="lime")
 
     def change_dir(self, dx, dy):
+        global paused
+        
+        paused = False
         self.dx = dx
         self.dy = dy
 
@@ -240,12 +243,18 @@ for i in range(1):
 
 
 player = Player(0, 0)
+paused = False
+
+def pause():
+    global paused
+    paused = not paused
 
 def update():
 
     for i in range(len(runners)):
         runners[i].move()
-    player.move()
+    if (not paused):
+        player.move()
     if (running):
         master.after(200, update)
     
@@ -256,7 +265,7 @@ master.bind("<Left>", lambda x : player.change_dir(-1, 0))
 master.bind("<Right>", lambda x: player.change_dir(1, 0))
 master.bind("<Up>", lambda x: player.change_dir(0, -1))
 master.bind("<Down>", lambda x: player.change_dir(0, 1))
-master.bind("<space>", lambda x: player.change_dir(0, 0))
+master.bind("<space>", lambda x: pause())
 update()
 
 
