@@ -1,3 +1,4 @@
+from time import sleep
 from tkinter import *
 import random
 from turtle import update
@@ -12,8 +13,8 @@ WIN_WITDH = 1000
 master = Tk()
 canv = Canvas(master, height=WIN_HEIGHT, width=WIN_WITDH)
 
-GRID_WIDTH = 70
-GRID_HEIGHT = 70
+GRID_WIDTH = 30
+GRID_HEIGHT = 30
 
 img = PhotoImage(width=WIN_WITDH, height=WIN_HEIGHT)
 canv.create_image( 0, 0, image=img, anchor=NW )
@@ -48,7 +49,7 @@ class Grid1:
 
         for i in range(len(self.grid)):
             for j in range(len(self.grid[0])):
-                if (i == 0 or j == 0 or i == width - 1 or j == height - 1 or (random.randint(1, 75) == 15)):
+                if (i == 0 or j == 0 or i == width - 1 or j == height - 1):
                     self.grid[i][j][0] = 1
                     self.grid[i][j][1]("black")
 
@@ -95,10 +96,39 @@ class Grid1:
 
     def setPath(self, x, y):
         self.grid[x][y][0] = 2
-        canv.itemconfig(self.grid[x][y][1], fill="gray")
-        canv.update_idletasks()
-        master.update_idletasks()
-        print(x, y)
+        self.grid[x][y][1]("gray")
+
+    
+    def fill_dfs(self, x, y):
+        if (self.get_cube(x, y) != 0):
+            return 
+        
+        self.grid[x][y][0] = 3
+        # self.grid[x][y][1]("yellow")
+        
+        self.fill_dfs(x + 1, y)
+        self.fill_dfs(x - 1, y)
+        self.fill_dfs(x, y + 1)
+        self.fill_dfs(x, y - 1)
+
+
+
+    def fill(self):
+        for i in self.runners:
+            self.fill_dfs(i[1], i[0])
+
+        for i in range(len(self.grid)):
+            for j in range(len(self.grid[0])):
+                if (self.grid[i][j][0] == 0 or self.grid[i][j][0] == 2):
+                    self.grid[i][j][0] = 1
+                    self.grid[i][j][1]("black")
+                elif (self.grid[i][j][0] == 3):
+                    self.grid[i][j][0] = 0
+                    # self.grid[i][j][1]("yellow")
+
+        # for i in self.grid:
+        #     print(list(map(lambda x: x[0], i)))
+    
 
 class Runner:
     
@@ -154,7 +184,7 @@ class Runner:
         grid.grid[self.x][self.y][0] = 0
         self.x += self.dx
         self.y += self.dy
-        grid.grid[self.x][self.y][0] = 2
+        #grid.grid[self.x][self.y][0] = 2
 
         
         grid.move_runner(self.rect, self.x, self.y)
@@ -169,6 +199,7 @@ class Player:
         self.dx = 0
         self.dy = 0
 
+        self.path_length = 0
 
         self.rect = canv.create_rectangle(WIN_WITDH / GRID_WIDTH * self.x, WIN_HEIGHT / GRID_HEIGHT * self.y , WIN_WITDH / GRID_WIDTH * self.x + WIN_WITDH / GRID_WIDTH, WIN_HEIGHT / GRID_HEIGHT * self.y + WIN_HEIGHT / GRID_HEIGHT, fill="lime")
 
@@ -186,6 +217,11 @@ class Player:
 
         if (grid.get_cube(self.x, self.y) == 0):
             grid.setPath(self.x, self.y)
+            self.path_length += 1
+        elif (self.path_length > 0):
+            grid.fill()
+            self.path_length = 0
+
 
 
         canv.coords(self.rect, WIN_WITDH / GRID_WIDTH * self.x, WIN_HEIGHT / GRID_HEIGHT * self.y , WIN_WITDH / GRID_WIDTH * self.x + WIN_WITDH / GRID_WIDTH, WIN_HEIGHT / GRID_HEIGHT * self.y + WIN_HEIGHT / GRID_HEIGHT)
@@ -208,7 +244,7 @@ def update():
     for i in range(len(runners)):
         runners[i].move()
     player.move()
-    master.after(50, update)
+    master.after(200, update)
     
 
 
